@@ -1,0 +1,38 @@
+serversexam =[
+  {
+    :hostname => "managerV",
+    :ip => "192.168.198.1",
+    :box => "williamyeh/ubuntu-trusty64-docker",
+    :memram => 1024,
+    :cpu => 1
+  },
+  {
+    :hostname => "workerV",
+    :ip => "192.168.198.2",
+    :box => "williamyeh/ubuntu-trusty64-docker",
+    :memram => 1024,
+    :cpu => 1
+  }
+]
+ 
+#en el cual se crean las maquinas virtuales managerV y  workerV
+
+Vagrant.configure(2) do |config|
+  serversexam.each do |maquina|
+    config.vm.define maquina[:hostname] do |nodo|
+      nodo.vm.box = maquina[:box]
+      nodo.vm.hostname = maquina[:hostname]
+      nodo.vm.network "private_network", ip: maquina[:ip]
+      if maquina[:hostname] == "managerV"
+        nodo.vm.provision "docker"
+      else
+        nodo.vm.provision "docker"
+      end
+      nodo.vm.provider "vmware_desktop" do |vmwa|
+        vmwa.vmx["memsize"] =maquina[:memram]
+        vmwa.vmx["numvcpus"]=maquina[:cpu]
+        
+      end
+    end
+  end
+end
